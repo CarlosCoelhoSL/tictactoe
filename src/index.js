@@ -44,57 +44,65 @@ function Square (props) {
   
   
   function Game () {
-    const [history, setHistory] = useState([{squares: Array(9).fill(null)}]);
-    const [stepNumber, setStepNumber] = useState(0);
-    const [xIsNext, setXIsNext] = useState(true);
-    const [current, setCurrent] = useState(history[history.length - 1]);
-    const [squares, setSquares] = useState(current.squares.slice());
-    const [winner, setWinner] = useState(false)
+    const [state, setState] = useState({
+      history: [
+        {
+          squares: Array(9).fill(null),
+        },
+      ],
+      stepNumber: 0,
+      xIsNext: true,
+    });
     
     const handleClick = (i) => {
-      setHistory(history.slice(0, stepNumber + 1));
-      setCurrent(history[history.length - 1]);
-      setSquares(current.squares.slice());
+      const history = state.history.slice(0, state.stepNumber + 1);
+      const current = history[history.length - 1];
+      const squares = current.squares.slice();
       if (calculateWinner(squares) || squares[i]) {
         return;
       }
-      squares[i] = xIsNext ? 'X' : 'O';
-      setHistory({
-        history: history.concat([{
-          squares: squares
-        }])});
-      setStepNumber(history.length);
-      setXIsNext(!xIsNext);
-      
-    }
+      squares[i] = state.xIsNext ? 'X' : 'O';
+      setState({
+        history: history.concat([
+          {
+          squares: squares,
+          },
+        ]),
+        stepNumber: history.length,
+        xIsNext: !state.xIsNext
+      });  
+    };
 
     const jumpTo = (step) => {
-        setStepNumber(step);
-        setXIsNext(step % 2 === 0);
-        };
+      setState({
+        stepNumber: step,
+        xIsNext: step % 2 === 0,
+      });
+    };
     
     
 
       
-    setCurrent(history[stepNumber]);
-    setWinner(calculateWinner(current.squares));
+    const history = state.history;
+    const current = history[state.stepNumber];
+    const winner = calculateWinner(current.squares);
   
     const moves = history.map((step, move) => {
-    const desc = move ?
+      const desc = move ?
         'Go to move #' + move :
         'Go to game start';
       return (
           <li key={move}>
               <button onClick={() => jumpTo(move)}>{desc}</button>
           </li>
-      )
-    })
+      );
+    });
       
     let status;
     if (winner) {
       status = 'Winner: ' + winner;
     } else {
-      status = 'Next player: ' + (xIsNext ? 'X' : 'O');
+      status = 'Next player: ' + (state.xIsNext ? 'X' : 'O');
     }
   
     return (
