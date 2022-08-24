@@ -75,7 +75,7 @@ function Game () {
 
   const jumpTo = (step) => {
     setState({
-      history: state.history.slice(0,step+1),
+      history: state.history,
       stepNumber: step,
       xIsNext: step % 2 === 0,
     });
